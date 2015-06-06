@@ -1,0 +1,2 @@
+# dot-compose
+Function composition.
