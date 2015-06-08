@@ -53,7 +53,7 @@ describe('dot compose', function() {
       assert.equal(f(4), 10);
       assert.equal(f(3), 8);
     });
-    it('first function in chains can be partially applied – alternative', function() {
+    it('first function in chains can be partially applied – better alternative', function() {
       var f = g.add(2) . double .$;
       assert.equal(f(4), 10);
       assert.equal(f(3), 8);
@@ -73,17 +73,20 @@ describe('dot compose', function() {
   });
   describe('integration', function() {
     describe('Ramda', function() {
+      var r = Compose.Group(R);
       it('can decorate Ramda', function() {
-        var r = Compose.Group(R);
         var fn1 = r.add(2) . inc . negate .$;
         var fn2 = R.compose(R.add(2), R.inc, R.negate);
         assert.equal(fn1(13), fn2(13));
       });
       it('can compose with Ramda', function() {
-        var r = Compose.Group(R);
         Compose.curryN(R.curryN);
         var fn = r.negate . add .$;
         assert.equal(fn.length, 2);
+      });
+      it('can map function', function() {
+        assert.deepEqual(R.map(r.add(2).negate.divide(R.__, 3).$, [3, 6, 9, 12]),
+                         [1, 0, -1, -2]);
       });
     });
   });

@@ -11,6 +11,17 @@ function inject(fn) {
   }
 }
 
+var getFnName;
+
+if ('name' in inject) {
+  getFnName = function(fn) { return fn.name; };
+} else {
+  getFnName = function(fn) {
+    var fnString = fn.toString();
+    return fnString.slice('function '.length, fnString.indexOf('('));
+  };
+}
+
 function endComposition() {
   var chain = chains.pop();
   var first = chain[chain.length - 1];
@@ -61,7 +72,7 @@ function add(group, name, fn) {
 module.exports = {
   Group: createGroup,
   add: function(group, fn) {
-    return add(group, fn.name, fn);
+    return add(group, getFnName(fn), fn);
   },
   curryN: function(cur) { curryN = cur; }
 };
