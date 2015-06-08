@@ -1,7 +1,7 @@
 # dot-compose
 
 Combines the tersness of chaining with the power and flexibility of function
-composition. It temporarily hijacks JavaScripts property access operator `.`
+composition. It temporarily redefines JavaScripts property access operator `.`
 into meaning function composition.
 
 ## Example
@@ -10,12 +10,15 @@ With Ramda.
 
 ```javascript
 var r = dotCompose.Group(R); // Creates a compose group with all functions in `R`
-//    /-- Starts compisition
+
+//    /-- Starts composition
+//    |
 //    |       /------|---------- The dots represents composition
 //    v       v      v
 R.map(r.add(2).negate.divide(R.__, 3).$, [3, 6, 9, 12]); //=> [1, 0, -1, -2]
 //          ^                ^        ^
 //          |                |        \-- The dollar sign ends the composition
+//          |                |
 //          \-- Partial application works with curried functions
 ```
 
