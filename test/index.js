@@ -23,8 +23,17 @@ describe('dot compose', function() {
         return n + m;
       }
     });
+    var applyTwice = Compose.add(g, function applyTwice(fn, val) {
+      if (arguments.length === 1) {
+        return function(val) {
+          return fn(fn(val));
+        };
+      } else {
+        return fn(fn(val));
+      }
+    });
     it('two can compose', function() {
-      assert.equal((g.double . square.$)(3), 18);
+      assert.equal(g.double . square .$(3), 18);
     });
     it('three can compose', function() {
       assert.equal((g.add2 . double . square .$)(3), 20);
@@ -57,10 +66,14 @@ describe('dot compose', function() {
       var f = g.add2 . _(Math.abs) . half .$;
       assert.equal(f(-10), 7);
     });
+    it('function can be composed inside composition', function() {
+      var f = g.add(2) . half . applyTwice(g.half.double.$) .$;
+      assert.equal(f(4), 4);
+    });
   });
   describe('decoration', function() {
     it('can decorate Ramda', function() {
-      var r = Compose.inject(R);
+      var r = Compose.Group(R);
       var fn1 = r.add(2) . inc . negate .$;
       var fn2 = R.compose(R.add(2), R.inc, R.negate);
       assert.equal(fn1(13), fn2(13));
