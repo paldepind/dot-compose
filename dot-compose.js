@@ -1,89 +1,53 @@
-function createGroup() {
-  return new Group();
-}
-
-function Group() {
-  this.fns = [];
-  this.intermediate = createIntermediate();
-}
-
 var chain = [];
 
-function createInjectFn(intermediate) {
-  return function(fn) {
-    chain.push(this);
-    chain.push(fn);
-    return intermediate;
+function inject(fn) {
+  chain.push(fn);
+  return this;
+}
+
+function endComposition() {
+  var ch = chain;
+  chain = [];
+  return function() {
+    var i, val = ch[ch.length - 1].apply(undefined, arguments);
+    for (i = ch.length - 2; i >= 0; --i) {
+      val = ch[i](val);
+    }
+    return val;
   };
 }
 
-function createIntermediate() {
-  function fn() {
+function createGroup() {
+  function group() {
     var lastIdx = chain.length - 1;
     chain[lastIdx] = chain[lastIdx].apply(null, arguments);
-    return fn;
+    return group;
   }
-  fn._ = function(fn) {
-    chain.push(fn);
-    return this;
-  };
-  Object.defineProperty(fn, '$', {
-    get: function() {
-      var ch = chain;
-      chain = [];
-      return function() {
-        var val = ch[ch.length - 1].apply(undefined, arguments);
-        for (var i = ch.length - 2; i >= 0; --i) {
-          val = ch[i](val);
-        }
-        return val;
-      };
-    }
-  });
+  group._ = inject;
+  Object.defineProperty(group, '$', {get: endComposition});
+  return group;
+}
+
+function add(group, name, fn) {
+  if (group[name] === undefined) {
+    Object.defineProperty(group, name, {get: inject.bind(group, fn)});
+  }
   return fn;
 }
-
-function addIntermediateGetter(inter, name, fn) {
-  Object.defineProperty(inter, name, {
-    get: function() {
-      chain.push(fn);
-      return inter;
-    }
-  });
-}
-
-function addInitialGetter(fn, fn2, name, inter) {
-  Object.defineProperty(fn, name, {
-    get: function() {
-      chain.push(fn);
-      chain.push(fn2);
-      return inter;
-    }
-  });
-}
-
-Group.prototype._ = function(fn) {
-  chain.push(fn);
-  return this.intermediate;
-};
-
-Group.prototype.add = function(origFn) {
-  var name = origFn.name;
-  var fn = origFn;
-  var i, fn2, name2;
-  fn[name] = fn;
-  for (i = 0; i < this.fns.length; ++i) {
-    fn2 = this.fns[i];
-    name2 = fn2.customName !== undefined ? fn2.customName : fn2.name;
-    addInitialGetter(fn, fn2, name2, this.intermediate);
-    addInitialGetter(fn2, fn, name, this.intermediate);
-  }
-  this.fns.push(fn);
-  addIntermediateGetter(this.intermediate, name, fn);
-  fn._ = createInjectFn(this.intermediate);
-  return fn;
-};
 
 module.exports = {
   Group: createGroup,
+  inject: function(obj) {
+    var fn, group = createGroup();
+    for (var name in obj) {
+      fn = obj[name];
+      if (typeof fn === 'function' && group[name] === undefined) {
+        add(group, name, fn);
+      }
+    }
+    return group;
+  },
+  add: function(group, fn) {
+    return add(group, fn.name, fn);
+  },
 };
