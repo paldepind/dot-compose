@@ -1,4 +1,5 @@
 var chains = [];
+var curryN = function(n, fn) { return fn; };
 
 function inject(fn) {
   if (this._int !== undefined) {
@@ -12,13 +13,14 @@ function inject(fn) {
 
 function endComposition() {
   var chain = chains.pop();
-  return function() {
-    var i, val = chain[chain.length - 1].apply(undefined, arguments);
+  var first = chain[chain.length - 1];
+  return curryN(first.length, function() {
+    var i, val = first.apply(undefined, arguments);
     for (i = chain.length - 2; i >= 0; --i) {
       val = chain[i](val);
     }
     return val;
-  };
+  });
 }
 
 function createGroup(obj) {
@@ -61,4 +63,5 @@ module.exports = {
   add: function(group, fn) {
     return add(group, fn.name, fn);
   },
+  curryN: function(cur) { curryN = cur; }
 };

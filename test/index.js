@@ -71,12 +71,20 @@ describe('dot compose', function() {
       assert.equal(f(4), 4);
     });
   });
-  describe('decoration', function() {
-    it('can decorate Ramda', function() {
-      var r = Compose.Group(R);
-      var fn1 = r.add(2) . inc . negate .$;
-      var fn2 = R.compose(R.add(2), R.inc, R.negate);
-      assert.equal(fn1(13), fn2(13));
+  describe('integration', function() {
+    describe('Ramda', function() {
+      it('can decorate Ramda', function() {
+        var r = Compose.Group(R);
+        var fn1 = r.add(2) . inc . negate .$;
+        var fn2 = R.compose(R.add(2), R.inc, R.negate);
+        assert.equal(fn1(13), fn2(13));
+      });
+      it('can compose with Ramda', function() {
+        var r = Compose.Group(R);
+        Compose.curryN(R.curryN);
+        var fn = r.negate . add .$;
+        assert.equal(fn.length, 2);
+      });
     });
   });
 });
