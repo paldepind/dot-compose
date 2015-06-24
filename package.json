@@ -1,0 +1,29 @@
+{
+  "name": "dot-compose",
+  "version": "0.0.1",
+  "description": "The terseness of chaining with the power of composition.",
+  "main": "dot-compose.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/paldepind/dot-compose.git"
+  },
+  "keywords": [
+    "chaining",
+    "composition",
+    "function",
+    "currying",
+    "curry"
+  ],
+  "author": "Simon Friis Vindum",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/paldepind/dot-compose/issues"
+  },
+  "homepage": "https://github.com/paldepind/dot-compose#readme"
+}

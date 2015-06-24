@@ -11,15 +11,15 @@ With Ramda.
 ```javascript
 var r = dotCompose.Group(R); // Creates a compose group with all functions in `R`
 
-//    /-- Starts composition
-//    |
-//    |       /------|---------- The dots represents composition
-//    v       v      v
+//    ╭── Starts composition
+//    │
+//    │       ╭──────┬────────── The dots represents composition
+//    ↓       ↓      ↓
 R.map(r.add(2).negate.divide(R.__, 3).$, [3, 6, 9, 12]); //=> [1, 0, -1, -2]
-//          ^                ^        ^
-//          |                |        \-- The dollar sign ends the composition
-//          |                |
-//          \-- Partial application works with curried functions
+//          ↑                ↑        ↑
+//          │                │        ╰── The dollar sign ends the composition
+//          │                │
+//          ╰── Partial application works with curried functions
 ```
 
 ## Tutorial
